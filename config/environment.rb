@@ -22,7 +22,8 @@ Gamebox.configure do |config|
 
   config.default_font_name = "arcade.ttf"
 
-  config.stages = [:wireframe00, :wireframe01, :final]
+  # config.stages = [:wireframe00, :wireframe01, :wireframe02, :final]
+  config.stages = [:wireframe02]
   config.game_name = "Parallax System Demo"
 end
 
