@@ -1,4 +1,4 @@
-define_stage :wireframe01 do
+define_stage :wireframe do
   requires :tween_manager
 
   curtain_up do |*args|
