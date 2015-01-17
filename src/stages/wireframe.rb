@@ -16,6 +16,7 @@ define_stage :wireframe do
       @textures = []
       @textures << create_actor(:texture, x: position_1, y: conveyor_belt_y,
         text:   1.ordinal.capitalize,
+        # TODO all these fake_viewport_width
         width:  viewport.width/4,
         height: viewport.height/4,
         fill:   orange
@@ -208,7 +209,7 @@ define_stage :wireframe do
 
     # speed of tweens
     def rate
-      0.05
+      0.10
     end
 
   end
