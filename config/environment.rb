@@ -20,10 +20,10 @@ Gamebox.configure do |config|
   config.gb_gfx_path = GAMEBOX_PATH + "data/graphics/"
   config.gb_fonts_path = GAMEBOX_PATH + "data/fonts/"
 
-  config.default_font_name = "arcade.ttf"
+  config.default_font_name = "providence.ttf"
 
   # config.stages = [:wireframe00, :wireframe01, :wireframe02, :final]
-  config.stages = [:wireframe02]
+  config.stages = [:wireframe01]
   config.game_name = "Parallax System Demo"
 end
 

@@ -1,18 +1,184 @@
 define_stage :wireframe01 do
+  requires :tween_manager
 
-  curtain_up do
-    center_x = viewport.width / 2
-    center_y = viewport.height / 2
+  curtain_up do |*args|
+    opts = args.first || {}
+    common_setup
 
-    fake_width = viewport.width / 4
-    fake_height = viewport.height / 4
+    @stagehand.when(:create_scene) do
+      @title = create_actor :label, x:center_x - 234, y:25, text:"A Parallax System", font_size: 64
+      @fake_viewport = create_actor :fake_viewport,
+        x:center_x, y:center_y, width:fake_viewport_width+2, height:fake_viewport_height+2
+    end
+
+    @stagehand.when(:introduce_textures) do
+      @title.text = "Offscreen Textures"
+      @textures = []
+      @textures << create_actor(:texture, x: position_1, y: conveyor_belt_y,
+        text:   1.ordinal.capitalize,
+        width:  viewport.width/4,
+        height: viewport.height/4,
+        fill:   orange
+        )
+
+      @textures << create_actor(:texture, x:position_2, y:conveyor_belt_y,
+        text:   2.ordinal.capitalize,
+        width:  viewport.width/4,
+        height: viewport.height/4,
+        fill:   green
+        )
+
+      @textures << create_actor(:texture, x:position_3, y:conveyor_belt_y,
+        text:   3.ordinal.capitalize,
+        width:  viewport.width/4,
+        height: viewport.height/4,
+        fill:   lime
+        )
+      # We can't just use textures.length all the time because we'll eventually be deleting textures
+      # and we want to label them based on the total number created.
+      @number_of_textures_created = @textures.count
+    end
+
+    # slide all the textures into position, demonstrating we
+    # can create textures anywhere offscreen but the effect
+    # requires them to slide in from offscreen
+    @stagehand.when(:align_to_conveyor_belt) do
+      @title.text = "Horizontal Parallax"
+      @textures.each do |texture|
+        distance_y = (texture.y - center_y).abs
+        tween_manager.tween_properties texture,
+          {x: texture.x, y:center_y}, distance_y / 0.18, Tween::Quad::InOut
+      end
+    end
+
+    @stagehand.when(:start_sliding) do
+      @title.text = "Parallax Movement"
+       @textures.each do |texture|
+        destination_x = texture.x - fake_viewport_width
+        distance_x = (texture.x - destination_x).abs
+        tween_manager.tween_properties texture,
+          {x: destination_x, y:texture.y}, distance_x / rate, Tween::Linear
+      end
+    end
+
+    @stagehand.when(:delete) do
+      @textures.first.remove
+      @textures.delete_at 0
+    end
+
+    @stagehand.when(:introduce) do
+      spawn_x = @textures.last.x + @textures.last.width
+      spawned = create_actor(:texture, x: spawn_x, y: @textures.last.y,
+        text:   (@number_of_textures_created += 1).ordinal.capitalize,
+        width:  viewport.width/4,
+        height: viewport.height/4,
+        fill:   blue
+        )
+
+      # We can't just blindly tween left because we have to consider that the train
+      # of already moving textures has elapsed time, so if we tween a static amount
+      # this new guy will overlap or who knows.
+      spawned_destination = spawned.x - (@textures.last.x - fake_viewport_width).abs + fake_viewport_width
+      spawned_distance = (spawned.x - spawned_destination).abs
+      time_delta = spawned_distance / rate
+      # stack level too deep if distance is zero
+      if spawned_distance > 0
+        tween_manager.tween_properties spawned, {x: spawned_destination, y:spawned.y}, time_delta, Tween::Linear
+      end
+      @textures << spawned
+    end
+
+    @stagehand.fire :create_scene
+
+    # replay the scene up to some point
+    # TODO: the case/switch statement is making this too rule-based
+    # if there was a hash of a "scene flow" then you could select a range of symbols to fire or something
+    if opts.has_key? :start_on
+      if opts[:start_on] == 2
+        @stagehand.fire :introduce_textures
+        @stagehand.fire :align_to_conveyor_belt
+        @stagehand.progression_counter = 2
+      end
+    end
+
+
+    # interactivity might not be the best idea here because of edge cases
+    # so we're just going to progress the scene with the spacebar
+    input_manager.reg :down, K_SPACE do
+      @stagehand.progression_counter += 1
+
+      case @stagehand.progression_counter
+      when 1
+        @stagehand.fire :introduce_textures
+      when 2
+        @stagehand.fire :align_to_conveyor_belt
+      when 3
+        @stagehand.fire :start_sliding
+      when 4
+        @stagehand.fire :delete
+      when 5
+        @stagehand.fire :introduce
+      when 6
+        @stagehand.fire :start_sliding
+      when 7
+        @stagehand.fire :delete
+      when 8
+        @stagehand.fire :introduce
+      else
+        fire :next_stage
+      end
+    end
+
+    # :down is key down, codes are defined in gamebox/lib/gamebox/constants.rb
+    input_manager.reg :down, K_R do
+      fire :restart_stage, {start_on: 2}
+    end
+
+  end
+
+  curtain_down do |*args|
+    fire :remove_me
+    input_manager.clear_hooks
+  end
+
+  helpers do
+    def common_setup
+      @stagehand = create_actor :stagehand
+      @number_of_textures_created = 0
+    end
+
+    def fake_viewport_width
+      viewport.width / 4
+    end
+
+    def fake_viewport_height
+      viewport.height / 4
+    end
+
+    def center_x
+      viewport.width / 2
+    end
+
+    def center_y
+      viewport.height / 2
+    end
+
+    def position_1
+      center_x - fake_viewport_width
+    end
+
+    def position_2
+      center_x
+    end
+
+    def position_3
+      center_x + fake_viewport_width
+    end
 
     # put our textures in a line and move them for the demo
-    conveyor_belt_y = center_y + center_y / 2 + 20
-
-    title = create_actor :label, x:center_x - 234, y:25, text:"A Parallax System", font_size: 64, font_name: "remi.ttf"
-    fake_viewport = create_actor :fake_viewport,
-      x:center_x, y:center_y, width:fake_width, height:fake_height
+    def conveyor_belt_y
+      center_y + center_y / 2 + 20
+    end
 
     # kuler theme - vitamin c
     #   0,  67,  88  blue
@@ -20,45 +186,31 @@ define_stage :wireframe01 do
     # 190, 219,  57  lime
     # 255, 255,  26  yellow
     # 253, 116,   0  orange
-    blue = Color.new(80, 0, 67, 88)
-    green = Color.new(80, 31, 138, 112)
-    lime = Color.new(80, 190, 219, 57)
-    yellow = Color.new(80, 255, 255, 26)
-    orange = Color.new(80, 253, 116, 0)
-
-    textures = []
-    textures << create_actor(:texture,
-      text:"One",
-      x:center_x - fake_width, y:conveyor_belt_y,
-      width:viewport.width/4, height:viewport.height/4,
-      fill: orange)
-
-    textures << create_actor(:texture,
-      x:center_x, y:conveyor_belt_y,
-      text:"Two",
-      width:viewport.width/4, height:viewport.height/4,
-      fill: green)
-
-    textures << create_actor(:texture,
-      x:center_x + fake_width, y:conveyor_belt_y,
-      text:"Three",
-      width:viewport.width/4, height:viewport.height/4,
-      fill: lime)
-
-
-
-    # :down is key down, KbEscape is defined in gamebox/lib/gamebox/constants.rb
-    input_manager.reg :down, K_SPACE do
-      fire :next_stage
+    def blue
+      Color.new(80, 0, 67, 88)
     end
-  end
 
-  curtain_down do
-    fire :remove_me
-    input_manager.clear_hooks
-  end
+    def green
+      Color.new(80, 31, 138, 112)
+    end
 
-  helpers do
+    def lime
+      Color.new(80, 190, 219, 57)
+    end
+
+    def yellow
+      Color.new(80, 255, 255, 26)
+    end
+
+    def orange
+      Color.new(80, 253, 116, 0)
+    end
+
+    # speed of tweens
+    def rate
+      0.05
+    end
+
   end
 
 end
