@@ -100,6 +100,8 @@ define_stage :wireframe do
 
     # interactivity might not be the best idea here because of edge cases
     # so we're just going to progress the scene with the spacebar
+    # TODO: you can't press space too fast, it's not that smart.  this is
+    # just a presentation.
     input_manager.reg :down, K_SPACE do
       @stagehand.progression_counter += 1
 
@@ -137,7 +139,8 @@ define_stage :wireframe do
         @textures.last.fill = orange
         @stagehand.fire :start_sliding
       when 8
-        @title.text = "Ok."
+        # TODO: ha, I don't have centering code.
+        @title.text = "             Ok."
         # dramatic pause
       else
         fire :next_stage
