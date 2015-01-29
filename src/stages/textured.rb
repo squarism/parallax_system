@@ -94,26 +94,27 @@ define_stage :textured do
 
       case @stagehand.progression_counter
       when 1
-        @stagehand.fire :start_sliding
+        cycle
       when 2
-        @stagehand.fire :delete
+        cycle
       when 3
-        @stagehand.fire :introduce
-        @stagehand.fire :start_sliding
-      when 4
         remove_actors
         @stagehand.fire :create_scene
         @title.text = "Shade the Offscreen"
         @stagehand.fire :alpha_mask
-      when 5
+      when 4
         cycle
-      when 6
+      when 5
         remove_actors
         @stagehand.fire :create_scene
         @title.text = "Cover Offscreen"
         @stagehand.fire :total_mask
+      when 6
+        cycle
+        remove_texture_borders
       when 7
         cycle
+        remove_texture_borders
       else
         fire :next_stage
       end
@@ -176,13 +177,14 @@ define_stage :textured do
     end
 
     def cycle
-      @stagehand.fire :start_sliding
       @stagehand.fire :delete
       @stagehand.fire :introduce
+      @stagehand.fire :start_sliding
     end
 
     def remove_texture_borders
       @textures.each {|t| t.border_enabled = false }
+      @fake_viewport.border_enabled = false
     end
 
   end
