@@ -14,8 +14,8 @@ define_stage :wireframe do
     @stagehand.when(:introduce_textures) do
       @title.text = "Offscreen Textures"
       @textures = []
-      @textures << create_actor(:texture, x: position_1, y: conveyor_belt_y,
-        text:   1.ordinal.capitalize,
+      @textures << create_actor(:texture, x:position_1, y:conveyor_belt_y,
+        text:   "First",
         # TODO all these fake_viewport_width
         width:  viewport.width/4,
         height: viewport.height/4,
@@ -23,28 +23,24 @@ define_stage :wireframe do
         )
 
       @textures << create_actor(:texture, x:position_2, y:conveyor_belt_y,
-        text:   2.ordinal.capitalize,
+        text:   "Second",
         width:  viewport.width/4,
         height: viewport.height/4,
         fill:   green
         )
 
       @textures << create_actor(:texture, x:position_3, y:conveyor_belt_y,
-        text:   3.ordinal.capitalize,
+        text:   "Third",
         width:  viewport.width/4,
         height: viewport.height/4,
         fill:   lime
         )
-      # We can't just use textures.length all the time because we'll eventually be deleting textures
-      # and we want to label them based on the total number created.
-      @number_of_textures_created = @textures.count
     end
 
     # slide all the textures into position, demonstrating we
     # can create textures anywhere offscreen but the effect
     # requires them to slide in from offscreen
     @stagehand.when(:align_to_conveyor_belt) do
-      @title.text = "Horizontal Parallax"
       @textures.each do |texture|
         distance_y = (texture.y - center_y).abs
         tween_manager.tween_properties texture,
@@ -53,7 +49,6 @@ define_stage :wireframe do
     end
 
     @stagehand.when(:start_sliding) do
-      @title.text = "Parallax Movement"
        @textures.each do |texture|
         destination_x = texture.x - fake_viewport_width
         distance_x = (texture.x - destination_x).abs
@@ -67,10 +62,10 @@ define_stage :wireframe do
       @textures.delete_at 0
     end
 
-    @stagehand.when(:introduce) do
+    @stagehand.when(:introduce) do |name|
       spawn_x = @textures.last.x + @textures.last.width
       spawned = create_actor(:texture, x: spawn_x, y: @textures.last.y,
-        text:   (@number_of_textures_created += 1).ordinal.capitalize,
+        text:   name,
         width:  viewport.width/4,
         height: viewport.height/4,
         fill:   blue
@@ -112,19 +107,38 @@ define_stage :wireframe do
       when 1
         @stagehand.fire :introduce_textures
       when 2
+        @title.text = "Horizontal Parallax"
         @stagehand.fire :align_to_conveyor_belt
       when 3
+        @title.text = "Parallax Movement"
+        @stagehand.fire :delete
+        @stagehand.fire :introduce, "Fourth"
         @stagehand.fire :start_sliding
       when 4
+        @title.text = "Creating Respawns"
         @stagehand.fire :delete
+        @stagehand.fire :introduce, "Fifth"
+        @textures.last.fill = orange
+        @stagehand.fire :start_sliding
       when 5
-        @stagehand.fire :introduce
+        @title.text = "Moving Respawns"
+        @stagehand.fire :delete
+        @stagehand.fire :introduce, "Third"
+        @textures.last.fill = lime
+        @stagehand.fire :start_sliding
       when 6
+        @stagehand.fire :delete
+        @stagehand.fire :introduce, "Fourth"
+        @textures.last.fill = blue
         @stagehand.fire :start_sliding
       when 7
         @stagehand.fire :delete
+        @stagehand.fire :introduce, "Fifth"
+        @textures.last.fill = orange
+        @stagehand.fire :start_sliding
       when 8
-        @stagehand.fire :introduce
+        @title.text = "Ok."
+        # dramatic pause
       else
         fire :next_stage
       end
@@ -145,7 +159,6 @@ define_stage :wireframe do
   helpers do
     def common_setup
       @stagehand = create_actor :stagehand
-      @number_of_textures_created = 0
     end
 
     def fake_viewport_width
