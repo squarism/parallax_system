@@ -44,7 +44,6 @@ class ParallaxSystem
   end
 
   def respawn_parallax_actor
-    puts "respawning..."
     spawn_x = @actors.first.x + @width * 3.0
     respawn = @actors.shift
     respawn.x = spawn_x
@@ -54,7 +53,6 @@ class ParallaxSystem
   # when first texture is halfway off the screen, spawn another one
   def check_for_respawn(tween_manager)
     if @actors.first.x < @origin_x - @width
-      puts "I need to respawn."
       actor = respawn_parallax_actor
       start_actor(tween_manager, actor)
       @actors << actor
