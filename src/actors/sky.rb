@@ -1,5 +1,6 @@
 define_actor :sky do
   has_behavior :positioned, :layered, :graphical
+  # TODO: needs bordered behavior
 
   behavior do
     setup do
@@ -11,7 +12,6 @@ define_actor :sky do
 
   view do
     draw do |target, x_off, y_off, z|
-      # require 'pry'; binding.pry
       x = actor.x + x_off# - actor.width / 2
       y = actor.y + y_off# - actor.height / 2
 
