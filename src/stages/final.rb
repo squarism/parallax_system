@@ -13,7 +13,7 @@ define_stage :final do
     # so I'm just hardcoding the width to the save of the screen
     # be sure to size your images beforehand
     sky = ParallaxSystem.new(stage:self,
-      width:viewport.width - 4, height:viewport.height,
+      width:viewport.width, height:viewport.height,
       actor_name: :sky, x:0, y:0, layer:1
     )
     sky.rate = 0.0025
@@ -34,14 +34,14 @@ define_stage :final do
       case @stagehand.progression_counter
       when 1
         mountains = ParallaxSystem.new(stage:self,
-          width:viewport.width - 4, height:viewport.height,
+          width:viewport.width, height:viewport.height,
           actor_name: :mountain, x:0, y:320, layer:2
         )
         mountains.rate = 0.007
         mountains.start tween_manager
       when 2
         ground = ParallaxSystem.new(stage:self,
-          width:viewport.width - 4, height:viewport.height,
+          width:viewport.width, height:viewport.height,
           actor_name: :ground, x:0, y:395, layer:5
         )
         ground.rate = 0.02
