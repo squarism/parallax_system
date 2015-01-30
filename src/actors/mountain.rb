@@ -1,3 +1,5 @@
 define_actor :mountain do
-  has_behavior :positioned, :layered, :graphical
+  has_behaviors do 
+    graphical tileable: true
+  end
 end

@@ -10,7 +10,7 @@ GEM
     faster_xml_simple (0.5.0)
       libxml-ruby (>= 0.3.8.4)
     ffi (1.9.6)
-    gamebox (0.5.4)
+    gamebox (0.5.5)
       conject (>= 0.0.8)
       gosu
       i18n
@@ -81,7 +81,7 @@ PLATFORMS
 
 DEPENDENCIES
   conject
-  gamebox (~> 0.5.0)
+  gamebox (~> 0.5.5)
   pry
   rake
   releasy
