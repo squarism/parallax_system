@@ -27,7 +27,7 @@ define_stage :system do
 
     @stagehand.when(:remove_borders) do
       @border_enabled = false
-      sky.each do |actor|
+      sky.actors.each do |actor|
         actor.border_enabled = @border_enabled
       end
     end
