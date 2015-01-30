@@ -1,3 +1,6 @@
+# Seamless Cloud Patterns by bheware
+# http://seamlesstextures.deviantart.com/art/Sky-texture-pack-97378275
+
 define_actor :sky do
   has_behavior :positioned, :layered, :graphical
   # TODO: needs bordered behavior
@@ -12,8 +15,8 @@ define_actor :sky do
 
   view do
     draw do |target, x_off, y_off, z|
-      x = actor.x + x_off# - actor.width / 2
-      y = actor.y + y_off# - actor.height / 2
+      x = actor.x + x_off
+      y = actor.y + y_off
 
       actor.image.draw x, y, actor.layer
 

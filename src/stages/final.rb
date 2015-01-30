@@ -13,20 +13,19 @@ define_stage :final do
     # so I'm just hardcoding the width to the save of the screen
     # be sure to size your images beforehand
     sky = ParallaxSystem.new(stage:self,
-      width:viewport.width, height:viewport.height,
+      width:viewport.width - 4, height:viewport.height,
       actor_name: :sky, x:0, y:0, layer:1
     )
+    sky.rate = 0.0025
     sky.start tween_manager
+
+    ground = nil
+    mountains = nil
 
     director.when :update do |time|
       sky.check_for_respawn(tween_manager)
-    end
-
-    @stagehand.when(:remove_borders) do
-      @border_enabled = false
-      sky.each do |actor|
-        actor.border_enabled = @border_enabled
-      end
+      ground.check_for_respawn(tween_manager) if ground
+      mountains.check_for_respawn(tween_manager) if mountains
     end
 
     input_manager.reg :down, K_SPACE do
@@ -34,7 +33,19 @@ define_stage :final do
 
       case @stagehand.progression_counter
       when 1
-        @stagehand.fire :remove_borders
+        mountains = ParallaxSystem.new(stage:self,
+          width:viewport.width - 4, height:viewport.height,
+          actor_name: :mountain, x:0, y:320, layer:2
+        )
+        mountains.rate = 0.007
+        mountains.start tween_manager
+      when 2
+        ground = ParallaxSystem.new(stage:self,
+          width:viewport.width - 4, height:viewport.height,
+          actor_name: :ground, x:0, y:395, layer:5
+        )
+        ground.rate = 0.02
+        ground.start tween_manager
       else
         fire :next_stage
       end
