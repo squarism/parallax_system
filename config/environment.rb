@@ -26,6 +26,35 @@ Gamebox.configure do |config|
   config.game_name = "Parallax System Demo"
 end
 
+
+# --------------------------------------------------------
+# Flickering fixes
+Gosu::enable_undocumented_retrofication
+
+# TODO make tileable an option on graphical behavior
+# for now monkey patch it in
+# see: http://www.libgosu.org/rdoc/file.Tileability.html
+class ResourceManager
+  def load_image(file_name)
+    cached_img = @loaded_images[file_name]
+    if cached_img.nil?
+      begin
+        full_name = Gamebox.configuration.gfx_path + file_name
+        if ! File.exist? full_name
+          #check global gamebox location
+          full_name = Gamebox.configuration.gb_gfx_path + file_name
+        end
+        cached_img = Image.new(@window, full_name, true)
+      rescue Exception => ex
+        # log "Cannot load image #{file_name}", :warn
+      end
+      @loaded_images[file_name] = cached_img
+    end
+    cached_img
+  end
+end
+# --------------------------------------------------------
+
 [GAMEBOX_PATH, APP_ROOT, File.join(APP_ROOT,'src')].each{|path| $: << path }
 require "gamebox_application"
 
