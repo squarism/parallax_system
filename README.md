@@ -1,9 +1,7 @@
 # Parallax System Demo
 
 ![wireframe screenshot](https://raw.githubusercontent.com/squarism/parallax_system/images/images/screenshot00.png)
-
 ![textures in motion](https://raw.githubusercontent.com/squarism/parallax_system/images/images/screenshot01.png)
-
 ![final parallax system](https://raw.githubusercontent.com/squarism/parallax_system/images/images/screenshot02.png)
 
 
