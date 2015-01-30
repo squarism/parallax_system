@@ -1,5 +1,7 @@
 define_actor :sky_small do
-  has_behavior :positioned, :layered, :graphical
+  has_behaviors do 
+    graphical tileable: true
+  end
 
   behavior do
     setup do

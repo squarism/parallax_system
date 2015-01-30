@@ -24,6 +24,8 @@ Gamebox.configure do |config|
 
   config.stages = [:wireframe, :textured, :system, :final]
   config.game_name = "Parallax System Demo"
+  # Not sure if this is needed, seems to make it a little better
+  Gosu::enable_undocumented_retrofication
 end
 
 

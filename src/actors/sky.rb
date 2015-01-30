@@ -2,7 +2,9 @@
 # http://seamlesstextures.deviantart.com/art/Sky-texture-pack-97378275
 
 define_actor :sky do
-  has_behavior :positioned, :layered, :graphical
+  has_behaviors do 
+    graphical tileable: true
+  end
   # TODO: needs bordered behavior
 
   behavior do
