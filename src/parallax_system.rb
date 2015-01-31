@@ -32,35 +32,31 @@ class ParallaxSystem
 
   def start(tween_manager)
     @actors.each do |actor|
-      start_actor(tween_manager, actor)
+      start_tween(tween_manager, actor)
     end
   end
 
-  def start_actor(tween_manager, actor)
-    destination_x = actor.x - @width * 3.0
+  def start_tween(tween_manager, actor)
+    # Originally I thought I could make destination_x = actor.x -@width * 3.0
+    # but occasionally such timing and float rounding situations would arise that the actors never reach
+    # their destination.  So the 0.5 is a bit of a fudge factor.
+    destination_x = actor.x - @width * 3.5
     distance_x = (actor.x - destination_x).abs
-    @stage.tween_manager.tween_properties actor,
-    {x: destination_x, y:actor.y}, distance_x / @rate, Tween::Linear
+    @stage.tween_manager.tween_properties actor, { x:destination_x, y:actor.y }, distance_x / @rate, Tween::Linear
   end
 
-  def respawn_parallax_actor
-    spawn_x = @actors.first.x + @width * 3.0
-    respawn = @actors.shift
-    respawn.x = spawn_x
-    respawn
+  def move_parallax_actor
+    spawn_x = @actors[1].x + @width * 2.0
+    @actors.first.x = spawn_x
+    @actors.rotate!
+    @actors.last
   end
 
-  # when first texture is halfway off the screen, spawn another one
+  # when first texture is halfway off the screen, move actor
   def check_for_respawn(tween_manager)
-    if @actors.first.x < @origin_x - @width
-      actor = respawn_parallax_actor
-      start_actor(tween_manager, actor)
-      @actors << actor
-    end
-
-    if @actors.first.x <= -(@width)
-      dead = @actors.shift
-      dead.remove
+    if @actors.first.x < @origin_x - @width * 1.5
+      actor = move_parallax_actor
+      start_tween(tween_manager, actor)
     end
   end
 
