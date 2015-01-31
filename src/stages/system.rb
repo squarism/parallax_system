@@ -3,6 +3,7 @@ define_stage :system do
   requires :tween_manager
 
   curtain_up do
+    @title = create_actor :label, x:center_x - 260, y:25, text:"ParallaxSystem Object", font_size: 64
     @stagehand = create_actor :stagehand
     @border_enabled = false
     center_x = viewport.width / 2
@@ -44,5 +45,12 @@ define_stage :system do
     end
 
   end
+
+  helpers do
+    def center_x
+      viewport.width / 2
+    end
+  end
+
 
 end
